@@ -19,8 +19,8 @@ datasets and the svmperf package (explained below):
 ```
 conda create ecir -f environment_cc.yml
 conda activate ecir
-git clone https://github.com/AlexMoreo/CC.git
-cd CC
+git clone https://github.com/AlexMoreo/TweetSentQuant.git
+cd TweetSentQuant
 chmod +x *.sh
 ./prepare_datasets.sh
 ./prepare_svmperf.sh

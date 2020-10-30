@@ -1,0 +1,10 @@
+# project settings
+
+SAMPLE_SIZE = 100
+TEST_PREVALENCES=21
+DEVEL_PREVALENCES=21
+TEST_REPETITIONS=25
+DEVEL_REPETITIONS=5
+SVM_PERF_HOME = '../svm_perf_quantification'
+DATASET_HOME = '../datasets'
+

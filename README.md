@@ -8,7 +8,6 @@ which is submitted for consideration to the _ECIR2021's track on Reproducibility
 ## Requirements
 * skicit-learn, numpy, scipy
 * svmperf patched for quantification (see below)
-* pytorch
 * absl-py
 * tqdm
 

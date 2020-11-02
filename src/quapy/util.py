@@ -1,12 +1,11 @@
 import itertools
 import multiprocessing
 from collections import defaultdict
-
 import numpy as np
 from joblib import Parallel, delayed
 import matplotlib.pyplot as plt
-
 from quapy.error import rae
+import pathlib, os
 
 
 def get_parallel_slices(n_tasks, n_jobs=-1):
@@ -65,7 +64,7 @@ def plot_diagonal(prevalences, methods_predictions, train_prev=None, test_prev=N
         plt.show()
 
 
-def plot_error_histogram(method_data_trainPrev_truePrevs_estimPrevs : dict,
+def plot_error_histogram_(method_data_trainPrev_truePrevs_estimPrevs : dict,
                          drift_measure_x: callable,
                          drift_measure_y: callable,
                          n_bins=21,
@@ -132,4 +131,66 @@ def plot_error_histogram(method_data_trainPrev_truePrevs_estimPrevs : dict,
     print(f'saving figure in ../drift{drift_y_name}.pdf')
     plt.savefig(f'../drift{drift_y_name}.pdf')
 
+def plot_error_histogram(method_data_trainPrev_truePrevs_estimPrevs : dict,
+                         drift_measure_x: callable,
+                         drift_measure_y: callable,
+                         n_bins=21,
+                         nice={},
+                         method_order=None,
+                         logscale_y=False):
+
+    train_drifts = defaultdict(lambda:[])
+    test_errors = defaultdict(lambda:[])
+    for method, dataset_vals in method_data_trainPrev_truePrevs_estimPrevs.items():
+        for (dataset, train_prev, true_prevs, estim_prevs) in dataset_vals:
+            n_samples = true_prevs.shape[0]
+            train_drifts[method].append([drift_measure_x(train_prev, true_prevs[i]) for i in range(n_samples)])
+            test_errors[method].append([drift_measure_y(true_prevs[i], estim_prevs[i]) for i in range(n_samples)])
+
+    method_trdrift_tedrift = {method:(train_drifts[method], test_errors[method]) for method in train_drifts.keys()}
+
+    plot_error_by_drift(method_trdrift_tedrift, n_bins, path, method_order, logscale_y, error_name)
+
+def plot_error_by_drift(method_trdrift_tedrift:dict, n_bins=21, path='../plots/drift.pdf', method_order=None,
+                        logscale_y=False, error_name='Error'):
+    fig, ax = plt.subplots()
+    #ax.set_aspect('equal')
+    ax.grid()
+
+    bins = np.linspace(0, 1, n_bins)
+
+    if method_order is None:
+        method_order = sorted(list(method_trdrift_tedrift.keys()))
+    for method in method_order:
+        if method not in method_trdrift_tedrift:
+            continue
+        sample_drifts, method_errors = method_trdrift_tedrift[method]
+        indices = np.digitize(sample_drifts, bins=bins)
+        x, y, std_low, std_high = [], [], [], []
+        for idx, bin in enumerate(bins):
+            scores = np.asarray(method_errors)[indices==idx]
+            if logscale_y:
+                scores = np.log(scores+1)
+
+            mean = np.mean(scores)
+            std = np.std(scores)
+            if not np.isnan(mean):
+                x.append(bin)
+                y.append(mean)
+                std_low.append(mean-std)
+                std_high.append(mean + std)
+        ax.errorbar(x, y, fmt='-', marker='o', label=method, markersize=3, zorder=2)
+        #ax.fill_between(x, std_low, std_high, alpha=0.25)
+    ax.set(xlabel=f'Distribution shift between training set and test sample',
+           ylabel=f'{error_name} (true distribution, predicted distribution)',
+           title=f'Quantification error as a function of distribution shift')
+    box = ax.get_position()
+    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    ax.set_xlim(min(x), max(x))
+    #plt.tight_layout()
+    #plt.show()
+    os.makedirs(pathlib.Path(path).parent, exist_ok=True)
+    print(f'saving figure in {path}')
+    plt.savefig(path)
 

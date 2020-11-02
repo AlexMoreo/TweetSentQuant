@@ -80,7 +80,7 @@ def load_dataset_model_selection():
 
 
 def load_dataset_model_evaluation(test_set_name):
-    logging.info(f'loading dataset {FLAGS.dataset}')
+    logging.info(f'loading dataset {test_set_name}')
 
     if test_set_name in {'semeval13', 'semeval14', 'semeval15'}:
         # these three datasets have the same training set, called "semeval"

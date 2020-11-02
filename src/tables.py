@@ -74,14 +74,23 @@ def save_table(path, table):
 # ----------------------------------------------------
 for i, eval_func in enumerate(evaluation_measures):
     optim = eval_func.__name__
-    methods = ['cc', 'acc', 'pcc', 'pacc', 'emq', 'svmq', 'svmkld', 'svmnkld', 'svm'+optim, 'quanet', 'dys']
+    methods = ['cc', 'acc', 'pcc', 'pacc', 'emq', 'svmq', 'svmkld', 'svmnkld', 'svm'+optim] #, 'quanet', 'dys']
     table = """
     \\begin{table}[h]
     """
     if i == 0:
         caption = """
           \caption{Values of AE obtained in our experiments; each value is the
-          average across 5775 values, each obtained on a different sample.}
+          average across 5775 values, each obtained on a different sample.
+          \\textbf{Boldface} indicates the best method for a given dataset. 
+          Superscripts $\dag$ and $\dag\dag$ denote the
+          methods (if any) whose score are not statistically significantly
+          different from the best one according to a paired sample, two-tailed 
+          t-test at different confidence levels: symbol $\dag$ indicates 
+          $0.001<p$-value $<0.05$ while symbol $\dag\dag$ indicates 
+          $0.05\leq p$-value. The absence of any such symbol indicates
+          $p$-value $\leq 0.001$.
+          }
         """
     else:
         caption = "\caption{As Table~\\ref{tab:maeresults}, but with "+nice[optim]+" instead of AE.}"
@@ -91,8 +100,8 @@ for i, eval_func in enumerate(evaluation_measures):
         """
 
     tabular = """
-        \\begin{tabularx}{\\textwidth}{|c||Y|Y|Y|Y|Y|Y|Y|Y||Y|Y|Y|} \hline
-          & \multicolumn{8}{c||}{Methods tested in~\cite{Gao:2016uq}} & \multicolumn{3}{c|}{Other methods} \\\\ \hline
+        \\begin{tabularx}{\\textwidth}{|c||Y|Y|Y|Y|Y|Y|Y|Y||Y|} \hline
+          & \multicolumn{8}{c||}{Methods tested in~\cite{Gao:2016uq}} &  \\\\ \hline
     """
 
     for method in methods:
@@ -117,7 +126,11 @@ for i, eval_func in enumerate(evaluation_measures):
                     tabular += f'& {score:.3f}'+'$\dag\dag$'
                 else:
                     print('stat sig error: ' + stat_sig)
-                tabular += color_from_rel_rank(rel_rank, maxtone=MAXTONE)
+                print(key)
+                try:
+                    tabular += color_from_rel_rank(rel_rank, maxtone=MAXTONE)
+                except ValueError:
+                    tabular += ''
             else:
                 tabular += ' & --- '
         tabular += '\\\\\hline\n'
@@ -148,14 +161,14 @@ for i, eval_func in enumerate(evaluation_measures):
           obtained in the evaluation of~\cite{Gao:2016uq}.}
         """
     else:
-        caption = "\caption{Same as Table~\\ref{tab:maeranks}, but with"+nice[optim]+" instead of AE.}"
+        caption = "\caption{Same as Table~\\ref{tab:maeranks}, but with "+nice[optim]+" instead of AE.}"
     table += caption + """
             \\begin{center}
             \\resizebox{\\textwidth}{!}{
         """
     tabular = """
         \\begin{tabularx}{\\textwidth}{|c||Y|Y|Y|Y|Y|Y|Y|Y|} \hline
-          & \multicolumn{8}{c||}{Methods tested in~\cite{Gao:2016uq}}  \\\\ \hline
+          & \multicolumn{8}{c|}{Methods tested in~\cite{Gao:2016uq}}  \\\\ \hline
     """
 
     for method in methods:

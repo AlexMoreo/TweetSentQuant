@@ -63,11 +63,11 @@ The 11 datasets used in this work can be downloaded from
 [here](alt.qcri.org/~wgao/data/SNAM/tweet_sentiment_quantification.zip).
 The datasets are in vector form, and in sparse format.
 
-The file (semeval15.test.feature.txt)[./datasets/test/semeval15.test.feature.txt]
+The file [semeval15.test.feature.txt](./datasets/test/semeval15.test.feature.txt)
 is corrupted in the zip file (all documents have the 0 label). The
-script (repair_semeval15_test.py)[repair_semeval15_test.py] replaces
+script [repair_semeval15_test.py](repair_semeval15_test.py) replaces
 the wrong labels with the correct ones in 
-(semeval15.test.labels.npy)[.semeval15.test.labels.npy].
+[semeval15.test.labels.npy](.semeval15.test.labels.npy).
 
 In order to prepare the datasets (download and patch the file), simply
 run the script:

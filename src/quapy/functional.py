@@ -59,3 +59,13 @@ def adjusted_quantification(prevalence_estim, tpr, fpr, clip=True):
     return adjusted
 
 
+def normalize_prevalence(prevalences):
+    assert prevalences.ndim==1, 'unexpected shape'
+    accum = prevalences.sum()
+    if accum > 0:
+        return prevalences / accum
+    else:
+        # if all classifiers are trivial rejectors
+        return np.ones_like(prevalences) / prevalences.size
+
+

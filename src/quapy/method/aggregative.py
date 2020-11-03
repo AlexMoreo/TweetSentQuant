@@ -256,8 +256,7 @@ class OneVsAllELM(AggregativeQuantifier):
                 delayed(binary_quant_task)(c, self.learners, X) for c in self.learners.keys()
             )
         )
-        prevalences /= prevalences.sum()
-        return prevalences
+        return normalize_prevalence(prevalences)
 
     @property
     def classes_(self):
@@ -268,7 +267,7 @@ class OneVsAllELM(AggregativeQuantifier):
         for class_ in data.classes_:
             classifications.append(self.learners[class_].predict(data.documents))
         classifications = np.vstack(classifications).T
-        precomputed =  LabelledCollection(classifications, data.labels)
+        precomputed = LabelledCollection(classifications, data.labels)
         return precomputed
 
     def set_params(self, **parameters):

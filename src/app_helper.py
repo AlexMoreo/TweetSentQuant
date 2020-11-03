@@ -27,7 +27,7 @@ QUANTIFIER_ALIASES = {
     'svmkld': lambda learner: OneVsAllELM(settings.SVM_PERF_HOME, loss='kld'),
     'svmnkld': lambda learner: OneVsAllELM(settings.SVM_PERF_HOME, loss='nkld'),
     'svmmae': lambda learner: OneVsAllELM(settings.SVM_PERF_HOME, loss='mae'),
-    'svmmrae': lambda learner: OneVsAllELM(settings.SVM_PERF_HOME, loss='mrae'),
+    'svmmrae': lambda learner: OneVsAllELM(settings.SVM_PERF_HOME, loss='mrae', C=0.0001),
     'mlpe': lambda learner: MaximumLikelihoodPrevalenceEstimation(),
 }
 
@@ -239,8 +239,7 @@ def produce_predictions_ELM(method:OneVsAllELM, test):
 
     def test_method(sample):
         true_prevalence = sample.prevalence()
-        estim_prevalence = sample.documents.mean(axis=0)
-        estim_prevalence /= estim_prevalence.sum()
+        estim_prevalence = normalize_prevalence(sample.documents.mean(axis=0))
         return true_prevalence, estim_prevalence
 
     results = Parallel(n_jobs=-1)(

@@ -100,7 +100,7 @@ main.py:
     (default: 'mae')
   --learner: a classification learner method (lr svmperf)
   --method: a quantificaton method (cc, acc, pcc, pacc, emq, svmq, svmkld,
-    svmnkld, svmae, svmrae)
+    svmnkld, svmmae, svmmrae)
   --results: where to pickle the results as a pickle containing the true
     prevalences and the estimated prevalences according to the artificial
     sampling protocol
